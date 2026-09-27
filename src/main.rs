@@ -1,3 +1,4 @@
+use std::any::TypeId;
 #[allow(unused_imports)]
 use std::net::UdpSocket;
 
@@ -79,9 +80,9 @@ impl Question {
         }
         bytes.push(0);
 
-        bytes.push(self.record_type as u8);
+        bytes.extend_from_slice(&self.record_type.to_le_bytes());
 
-        bytes.push(self.class as u8);
+        bytes.extend_from_slice(&self.class.to_be_bytes());
 
         bytes
     }
