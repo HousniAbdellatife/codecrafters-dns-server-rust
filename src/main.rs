@@ -78,9 +78,9 @@ impl Question {
             bytes.push(label.len() as u8);
             bytes.extend_from_slice(label.as_bytes());
         }
-        bytes.push(0);
+        bytes.push(0x0);
 
-        bytes.extend_from_slice(&self.record_type.to_le_bytes());
+        bytes.extend_from_slice(&self.record_type.to_be_bytes());
 
         bytes.extend_from_slice(&self.class.to_be_bytes());
 
