@@ -24,8 +24,8 @@ fn main() {
 
                 let answer = ResourceRecord {
                     name: "codecrafters.io".to_string(),
-                    record_type: 1,
-                    class: 1,
+                    record_type: TYPE_A,
+                    class: CLASS_IN,
                     ttl: 60,
                     length: 4,
                     data: "\x08\x08\x08\x08".as_bytes().to_vec(),
