@@ -103,10 +103,10 @@ impl ResourceRecord {
 
         bytes.push(0x0);
 
-        bytes.extend_from_slice(self.record_type.to_le_bytes().as_slice());
-        bytes.extend_from_slice(self.class.to_le_bytes().as_slice());
-        bytes.extend_from_slice(self.ttl.to_le_bytes().as_slice());
-        bytes.extend_from_slice(self.length.to_le_bytes().as_slice());
+        bytes.extend_from_slice(self.record_type.to_be_bytes().as_slice());
+        bytes.extend_from_slice(self.class.to_be_bytes().as_slice());
+        bytes.extend_from_slice(self.ttl.to_be_bytes().as_slice());
+        bytes.extend_from_slice(self.length.to_be_bytes().as_slice());
 
         bytes.extend_from_slice(self.data.as_slice());
 
