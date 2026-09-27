@@ -21,8 +21,11 @@ fn main() {
                     CLASS_IN
                 );
 
+                let mut dnsHeader = DnsReplyHeader::new();
+                dnsHeader.qdcount = 1;
+
                 let dnsReply = DnsReply {
-                    header: DnsReplyHeader::new(),
+                    header: dnsHeader,
                     questions: vec![question],
                 };
 
