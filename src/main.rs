@@ -69,6 +69,10 @@ impl DnsReply {
             bytes.extend_from_slice(&question.to_bytes());
         }
 
+        for answer in &self.answers {
+            bytes.extend_from_slice(&answer.to_bytes());
+        }
+
         bytes
     }
 }
