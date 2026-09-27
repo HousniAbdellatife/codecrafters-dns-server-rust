@@ -22,12 +22,23 @@ fn main() {
                     CLASS_IN
                 );
 
+                let answer = ResourceRecord {
+                    name: "codecrafters.io".to_string(),
+                    record_type: 1,
+                    class: 1,
+                    ttl: 60,
+                    length: 4,
+                    data: vec![0x08],
+                };
+
                 let mut dnsHeader = DnsReplyHeader::new();
                 dnsHeader.qdcount = 1;
+                dnsHeader.ancount = 1;
 
                 let dnsReply = DnsReply {
                     header: dnsHeader,
                     questions: vec![question],
+                    answers: vec![answer],
                 };
 
                 let response = dnsReply.to_bytes();
@@ -46,7 +57,8 @@ fn main() {
 
 struct DnsReply {
     header: DnsReplyHeader,
-    questions: Vec<Question>
+    questions: Vec<Question>,
+    answers: Vec<ResourceRecord>
 }
 
 impl DnsReply {
@@ -67,6 +79,36 @@ struct Question {
     class: u16
 }
 
+
+struct ResourceRecord {
+    name: String,
+    record_type: u16,
+    class: u16,
+    ttl: u32,
+    length: u16,
+    data: Vec<u8>
+}
+
+impl ResourceRecord {
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for label in self.name.split(".") {
+            bytes.push(label.len() as u8);
+            bytes.extend_from_slice(label.as_bytes());
+        }
+
+        bytes.push(0x0);
+
+        bytes.extend_from_slice(self.record_type.to_le_bytes().as_slice());
+        bytes.extend_from_slice(self.class.to_le_bytes().as_slice());
+        bytes.extend_from_slice(self.ttl.to_le_bytes().as_slice());
+        bytes.extend_from_slice(self.length.to_le_bytes().as_slice());
+
+        bytes.extend_from_slice(self.data.as_slice());
+
+        bytes
+    }
+}
 impl Question {
     fn new(name: String, record_type: u16, class: u16) -> Question {
         Self { name, record_type, class }
