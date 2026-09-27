@@ -27,7 +27,7 @@ fn main() {
                     record_type: 1,
                     class: 1,
                     ttl: 60,
-                    length: 4,
+                    length: 1,
                     data: vec![0x08],
                 };
 
