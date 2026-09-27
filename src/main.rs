@@ -16,6 +16,8 @@ fn main() {
             Ok((size, source)) => {
                 println!("Received {} bytes from {}", size, source);
 
+                let id = u16::from_be_bytes([buf[0], buf[1]]);
+
                 let question = Question::new(
                     "codecrafters.io".to_string(),
                     TYPE_A,
@@ -32,6 +34,7 @@ fn main() {
                 };
 
                 let mut dnsHeader = DnsReplyHeader::new();
+                dnsHeader.pid = id;
                 dnsHeader.qdcount = 1;
                 dnsHeader.ancount = 1;
 
@@ -75,6 +78,27 @@ impl DnsReply {
 
         bytes
     }
+}
+
+
+#[derive(Debug)]
+struct DnsHeader {
+    id: u16,
+
+    qr: bool,
+    opcode: u8,
+    aa: bool,
+    tc: bool,
+    rd: bool,
+
+    ra: bool,
+    z: u8,
+    rcode: u8,
+
+    qdcount: u16,
+    ancount: u16,
+    nscount: u16,
+    arcount: u16,
 }
 
 struct Question {
