@@ -1,6 +1,10 @@
 #[allow(unused_imports)]
 use std::net::UdpSocket;
 
+
+const TYPE_A: u16 = 1;
+const CLASS_IN: u16 = 1;
+
 fn main() {
 
     let udp_socket = UdpSocket::bind("127.0.0.1:2053").expect("Failed to bind to address");
@@ -10,7 +14,19 @@ fn main() {
         match udp_socket.recv_from(&mut buf) {
             Ok((size, source)) => {
                 println!("Received {} bytes from {}", size, source);
-                let response = DnsReplyHeader::new().to_bytes();
+
+                let question = Question::new(
+                    "codecrafters.io".to_string(),
+                    TYPE_A,
+                    CLASS_IN
+                );
+
+                let dnsReply = DnsReply {
+                    header: DnsReplyHeader::new(),
+                    questions: vec![question],
+                };
+
+                let response = dnsReply.to_bytes();
                 udp_socket
                     .send_to(&response, source)
                     .expect("Failed to send response");
@@ -25,9 +41,48 @@ fn main() {
 
 
 struct DnsReply {
-    header: DnsReplyHeader
+    header: DnsReplyHeader,
+    questions: Vec<Question>
 }
 
+impl DnsReply {
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&self.header.to_bytes());
+        for question in &self.questions {
+            bytes.extend_from_slice(&question.to_bytes());
+        }
+
+        bytes
+    }
+}
+
+struct Question {
+    name: String,
+    record_type: u16,
+    class: u16
+}
+
+impl Question {
+    fn new(name: String, record_type: u16, class: u16) -> Question {
+        Self { name, record_type, class }
+    }
+
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for label in self.name.split(".") {
+            bytes.push(label.len() as u8);
+            bytes.extend_from_slice(label.as_bytes());
+        }
+        bytes.push(0);
+
+        bytes.push(self.record_type as u8);
+
+        bytes.push(self.class as u8);
+
+        bytes
+    }
+}
 struct DnsReplyHeader {
     // bytes 1,2
     pid: u16,
